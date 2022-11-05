@@ -1,4 +1,11 @@
+import { useState } from "react"
+
 function Calculator(){
+
+    const [input,setInput] = useState(0);
+    const [output,setOutPut] = useState(0);
+    const [lastOperator,setLastOperator] = useState(false)
+
     const inputs = [
         {
             value: 7
@@ -57,35 +64,59 @@ function Calculator(){
         }
     ]
 
+    function onInput(value,type){
+        if(type === "equal"){
+            try{
+                let result = eval(input);
+                setOutPut(result)
+                setInput(0)
+                return
+            }catch(error){
+                alert("It's an invalid input");
+                return
+            }
+        }
+        if(input === 0 && type === "operant") return setInput(value)
+        if(lastOperator && type === "operator") return
+        setLastOperator(type === "operator")
+        setInput(input+""+value)
+    }
+
+    function keyType(name){
+        switch(name){
+            case "red":
+                return "operator";
+            case "green":
+                return "equal";
+            default:
+                return "operant"
+        }
+    }
 
 
     return(
         <div className="container">
             <section className="monitor">
                 <div className="input-string">
-                25*25
+                {input}
                 </div>
                 <div className="output">
-                625
+                {output}
                 </div>
             </section>
             <section className="input-buttons">
-                <button>7</button>
-                <button>8</button>
-                <button>9</button>
-                <button className="red">/</button>
-                <button>4</button>
-                <button>5</button>
-                <button>6</button>
-                <button className="red">*</button>
-                <button>1</button>
-                <button>2</button>
-                <button>3</button>
-                <button className="red">-</button>
-                <button>.</button>
-                <button>0</button>
-                <button className="green">=</button>
-                <button className="red">+</button>
+                {inputs.map(
+                    ({value,className})=>
+                    <button
+                        className={className}
+                        onClick={()=>onInput(
+                            value,
+                            keyType(className)
+                            )}
+                    >
+                        {value}
+                    </button>
+                )}
             </section>
         </div>
     )
